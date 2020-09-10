@@ -8,6 +8,7 @@ import click
 import uvloop
 
 from .midi import get_ports
+from .types import MidiPacket, EventDelta
 
 
 async def async_main() -> None:
@@ -17,6 +18,9 @@ async def async_main() -> None:
     except ValueError as port:
         click.secho(f"(port) is not available", fg="red", err=True)
         raise click.Abort
+
+
+    from_circuit.set_callback(None)
 
 
 @click.command()
