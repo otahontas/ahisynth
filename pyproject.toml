@@ -10,6 +10,8 @@ click = "^7.1.2"
 python-rtmidi = "^1.4.5"
 uvloop = "^0.14.0"
 black = "^20.8b1"
+flake8 = "^3.8.3"
+flake8-black = "^0.2.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

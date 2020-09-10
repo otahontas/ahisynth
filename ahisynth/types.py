@@ -1,8 +1,8 @@
 # Custom types
 
-from typing import List
+from typing import List, Tuple
 
 EventDelta = float  # in seconds
 TimeStamp = float  # time.time()
-MidiPacket = List[Int]
+MidiPacket = List[int]
 MidiMessage = Tuple[MidiPacket, EventDelta, TimeStamp]
