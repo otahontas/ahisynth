@@ -39,7 +39,6 @@ ALL_CHANNELS = range(16)
 def get_ports(port_name: str, *, clock_source: bool = False) -> Tuple[MidiIn, MidiOut]:
     midi_in = MidiIn()
     midi_out = MidiOut()
-
     midi_in_ports = midi_in.get_ports()
     midi_out_ports = midi_out.get_ports()
     try:
