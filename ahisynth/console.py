@@ -7,10 +7,12 @@ import click
 
 import uvloop
 import time
+import numpy as np
+import sounddevice as sd
 
-from .midi import get_ports, silence, NOTE_ON
+from .midi import get_ports, silence, NOTE_ON, NOTE_OFF
 from .types import MidiPacket, EventDelta, MidiMessage
-from .notes import notes_by_midi
+from .notes import notes_by_midi, hz_by_midi
 
 MIDI_KB = "Akai LPK25 Wireless:Akai LPK25 Wireless MIDI 1 20:0"
 
@@ -45,9 +47,30 @@ async def async_main() -> None:
 async def midi_consumer(midi_queue: asyncio.Queue[MidiMessage]) -> None:
     while True:
         pkt, delta, sent_time = await midi_queue.get()
-        latency = time.time() - sent_time
         if pkt[0] == NOTE_ON:
-            print(f"You played note: {notes_by_midi[pkt[1]]}")
+            click.echo(f"Playing: {notes_by_midi[pkt[1]]}, {hz_by_midi[pkt[1]]}")
+            await play(hz_by_midi[pkt[1]])
+
+
+start_idx = 0
+
+async def play(frequency):
+    amplitude = 0.2
+    samplerate = 44100.0
+
+    def callback(outdata, frames, time, status):
+        global start_idx
+        t = (start_idx + np.arange(frames)) / samplerate
+        t = t.reshape(-1, 1)
+        outdata[:] = amplitude * np.sin(2 * np.pi * frequency * t)
+        start_idx += frames
+
+    event = asyncio.Event()
+
+    stream = sd.OutputStream(device=None, channels=1, callback=callback,
+                             samplerate=samplerate)
+    with stream:
+        await event.wait()
 
 
 @click.command()
